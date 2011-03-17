@@ -1,1 +1,11 @@
-Edit
+#####################################################
+#Project: Zend Framework Auth/ACL Demo				#
+#Author: Alex Lintott <alex.lintott@lintal.co.uk>	#
+#Brief: 											#
+#	Demonstration project to demonstrate Zend_Auth,	#
+#	Zend_Acl with Zend_Controller_Plugin_Adapter.	#
+#Dependencies: 										#
+#	Requires Zend-Framework. Can be downloaded from	#
+#	ZF website: http://framework.zend.com/			#
+#	or the Linux Package-Manager					#
+#####################################################
