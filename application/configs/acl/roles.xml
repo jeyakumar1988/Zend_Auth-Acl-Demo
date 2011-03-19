@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<roles>
+	<role>
+		<name>Administrator</name>
+		<roles>
+			<role>
+				<name>Product Administrator</name>
+				<roles>
+					<role>
+						<name>Product Manager</name>
+					</role>
+				</roles>
+			</role>
+			<role>
+				<name>Sales Administrator</name>
+				<roles>
+					<role>
+						<name>Sales Manager</name>
+						<roles>
+							<role>
+								<name>Sales User</name>
+							</role>
+						</roles>
+					</role>
+				</roles>
+			</role>
+		</roles>
+	</role>
+	<baseRole>
+		<name>Guest</name>
+	</baseRole>
+</roles>
