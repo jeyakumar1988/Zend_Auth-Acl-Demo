@@ -33,6 +33,36 @@ class Default_Model_Acl extends Zend_Acl
 	 */
 	const ROLES_CONFIG_ALLOWALL_IDENTIFIER = 'allowAll';
 	
+	/**
+	 * Resources-Config: Identifier for resource node.
+	 */
+	const RESOURCES_CONFIG_RESOURCE_IDENTIFIER = 'resource';
+	
+	/**
+	 * Resources-Config: Identifier for custom role name node.
+	 */
+	const RESOURCES_CONFIG_RESOURCE_CUSTOMNAME_IDENTIFIER = 'name';
+	
+	/**
+	 * Resources-Config: Identifier for page-resource module node.
+	 */
+	const RESOURCES_CONFIG_RESOURCE_MODULE_IDENTIFIER = 'module';
+	
+	/**
+	 * Resources-Config: Identifier for page-resource controller node.
+	 */
+	const RESOURCES_CONFIG_RESOURCE_CONTROLLER_IDENTIFIER = 'controller';
+	
+	/**
+	 * Resources-Config: Identifier for page-resource action node.
+	 */
+	const RESOURCES_CONFIG_RESOURCE_ACTION_IDENTIFIER = 'action';
+	
+	/**
+	 * Resources-Config: Identifier for child resources node.
+	 */
+	const RESOURCES_CONFIG_CHILDRESOURCES_IDENTIFIER = 'resources';
+	
 	protected function __construct() {}
 	protected function __clone() {}
 	
@@ -174,22 +204,28 @@ class Default_Model_Acl extends Zend_Acl
 	 */
 	protected function processResourcesArray(array $resources, $parent = null) 
 	{
-		$resources = $resources['resource'];
+		$resources = $resources[self::RESOURCES_CONFIG_RESOURCE_IDENTIFIER];
 		if (Default_Model_Array_Utils::isAssoc($resources)) 
 			$resources = array($resources);
 			
 		foreach ($resources as $resource)
 		{
-			if (key_exists('name', $resource))
+			if (key_exists(self::RESOURCES_CONFIG_RESOURCE_CUSTOMNAME_IDENTIFIER,
+							$resource))
 			{
 				if ($parent instanceof Default_Model_Acl_PageResource)
 					throw new Zend_Acl_Exception("A custom resource cannot inherit from a page-resource.");
 					
-				$this->addResource($resource['name'], $parent);
-				$parentResource = $resource['name'];
+				$this->addResource($resource[self::RESOURCES_CONFIG_RESOURCE_CUSTOMNAME_IDENTIFIER],
+									$parent);
+				$parentResource = $resource[self::RESOURCES_CONFIG_RESOURCE_CUSTOMNAME_IDENTIFIER];
 				
 			} else if (Default_Model_Array_Utils::keysExist($resource, 
-													array('module', 'controller','action'),
+													array(
+														self::RESOURCES_CONFIG_RESOURCE_MODULE_IDENTIFIER,
+														self::RESOURCES_CONFIG_RESOURCE_CONTROLLER_IDENTIFIER,
+														self::RESOURCES_CONFIG_RESOURCE_ACTION_IDENTIFIER
+													),
 													Default_Model_Array_Utils::MATCH_PARTIAL)) {
 				
 				$module = $this->getModule($resource, $parent);
@@ -203,8 +239,10 @@ class Default_Model_Acl extends Zend_Acl
 			} else 
 				throw new Zend_Acl_Exception("An unknown resource-type was specified.");
 				
-			if (key_exists('resources', $resource))
-				$this->processResourcesArray($resource['resources'], $parentResource);
+			if (key_exists(self::RESOURCES_CONFIG_CHILDRESOURCES_IDENTIFIER, 
+							$resource))
+				$this->processResourcesArray($resource[self::RESOURCES_CONFIG_CHILDRESOURCES_IDENTIFIER],
+											 $parentResource);
 		}
 	}
 	
@@ -219,15 +257,16 @@ class Default_Model_Acl extends Zend_Acl
 	 */
 	private function getModule(array $resource, Default_Model_Acl_PageResource $parent = null)
 	{
-		if (key_exists('module', $resource))
+		if (key_exists(self::RESOURCES_CONFIG_RESOURCE_MODULE_IDENTIFIER, 
+					   $resource))
 		{
 			if (null !== $parent)
 			{
-				if ($resource['module'] !== $parent->getModule())
+				if ($resource[self::RESOURCES_CONFIG_RESOURCE_MODULE_IDENTIFIER] !== $parent->getModule())
 					throw new Zend_Acl_Exception("The same module must be used when inheriting from a parent page-resource.");
 			}
 			
-			return $resource['module'];
+			return $resource[self::RESOURCES_CONFIG_RESOURCE_MODULE_IDENTIFIER];
 		} else if (null !== $parent)
 			return $parent->getModule();
 		
@@ -246,15 +285,17 @@ class Default_Model_Acl extends Zend_Acl
 	 */
 	private function getController(array $resource, Default_Model_Acl_PageResource $parent = null)
 	{
-		if (key_exists('controller', $resource))
+		if (key_exists(self::RESOURCES_CONFIG_RESOURCE_CONTROLLER_IDENTIFIER,
+					   $resource))
 		{
 			if (null !== $parent)
 			{
 				$parentController = $parent->getController();
-				if (!empty($parentController) && $resource['controller'] !== $parentController)
+				if (!empty($parentController) && $resource[self::RESOURCES_CONFIG_RESOURCE_CONTROLLER_IDENTIFIER] !== 
+													$parentController)
 					throw new Zend_Acl_Exception("The same controller must be used when inheriting from a parent page-resource with specified controller.");
 			}
-			return $resource['controller'];
+			return $resource[self::RESOURCES_CONFIG_RESOURCE_CONTROLLER_IDENTIFIER];
 		}
 		else if (null !== $parent)
 		{
@@ -277,20 +318,22 @@ class Default_Model_Acl extends Zend_Acl
 	 */
 	private function getAction(array $resource, Default_Model_Acl_PageResource $parent = null)
 	{
-		if (key_exists('action', $resource))
+		if (key_exists(self::RESOURCES_CONFIG_RESOURCE_ACTION_IDENTIFIER,
+					   $resource))
 		{
 			$parentController = null;
 			if (null !== $parent)
 				$parentController = $parent->getController();
 				
-			if (empty($parentController) && !key_exists('controller', $resource))
+			if (empty($parentController) && !key_exists(self::RESOURCES_CONFIG_RESOURCE_CONTROLLER_IDENTIFIER,
+														$resource))
 				throw new Zend_Acl_Exception("You must specify a controller when creating a resource for a controller-action.");
 				
 			$parentAction = $parent->getAction();
 			if (!empty($parentAction))
 				throw new Zend_Acl_Exception("You cannot create a controller-action resource extending from a page-resource with an action already specified.");
 				
-			return $resource['action'];
+			return $resource[self::RESOURCES_CONFIG_RESOURCE_ACTION_IDENTIFIER];
 		}
 		return null;
 	}

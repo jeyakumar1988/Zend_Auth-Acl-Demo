@@ -86,7 +86,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$acl = Default_Model_Acl::getInstance();
 		$acl->setRoles(new Zend_Config_Xml($roleConfigPath, 
 								Default_Model_Acl::ROLES_CONFIG_CHILDROLES_IDENTIFIER))
-			->setResources(new Zend_Config_Xml($resourceConfigPath, 'resources'));
+			->setResources(new Zend_Config_Xml($resourceConfigPath, 
+								Default_Model_Acl::RESOURCES_CONFIG_CHILDRESOURCES_IDENTIFIER));
 	}
 }
 ?>
