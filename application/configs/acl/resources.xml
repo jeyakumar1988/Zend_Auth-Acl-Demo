@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resourceList>
+	<resources>
+		<resource>
+			<module>default</module>
+			<resources>
+				<resource>
+					<controller>product</controller>
+					<action>comment</action>
+					<permissions>
+						<allow role="User">
+							<comment />
+						</allow>
+						<deny role="Guest"></deny>
+					</permissions>
+				</resource>
+			</resources>
+		</resource>
+		<resource>
+			<module>admin</module>
+			<resources>
+				<resource>
+					<controller>index</controller>
+					<resources>
+						<resource>
+							<action>index</action>
+						</resource>
+					</resources>
+				</resource>
+			</resources>
+		</resource>
+		<resource>
+			<name>Custom resource</name>
+		</resource>
+	</resources>
+</resourceList>

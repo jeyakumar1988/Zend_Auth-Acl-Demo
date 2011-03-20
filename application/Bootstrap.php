@@ -79,11 +79,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 * @return void
 	 */
 	protected function _initAcl() 
-	{
+	{	
 		$roleConfigPath = APPLICATION_PATH . '/configs/acl/roles.xml';
+		$resourceConfigPath = APPLICATION_PATH . '/configs/acl/resources.xml';
 		
 		$acl = Default_Model_Acl::getInstance();
-		$acl->setRoles(new Zend_Config_Xml($roleConfigPath));
+		$acl->setRoles(new Zend_Config_Xml($roleConfigPath, 
+								Default_Model_Acl::ROLES_CONFIG_CHILDROLES_IDENTIFIER))
+			->setResources(new Zend_Config_Xml($resourceConfigPath, 'resources'));
 	}
 }
 ?>

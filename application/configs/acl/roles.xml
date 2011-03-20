@@ -1,32 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<roles>
-	<role>
-		<name>Administrator</name>
-		<roles>
+<rolesList>
+	<roles>
+		<role>
+			<name>Administrator</name>
+			<allowAll>1</allowAll>
+			<roles>
+				<role>
+					<name>Product Administrator</name>
+					<roles>
+						<role>
+							<name>Product Manager</name>
+						</role>
+					</roles>
+				</role>
+				<role>
+					<name>Sales Administrator</name>
+					<roles>
+						<role>
+							<name>Sales Manager</name>
+							<roles>
+								<role>
+									<name>Sales User</name>
+								</role>
+							</roles>
+						</role>
+					</roles>
+				</role>
+			</roles>
+		</role>
+		<!-- BaseRoles: Roles that all above roles inherit from. -->
+		<baseRoles>
 			<role>
-				<name>Product Administrator</name>
+				<name>User</name>
 				<roles>
 					<role>
-						<name>Product Manager</name>
+						<name>Guest</name>
 					</role>
 				</roles>
 			</role>
-			<role>
-				<name>Sales Administrator</name>
-				<roles>
-					<role>
-						<name>Sales Manager</name>
-						<roles>
-							<role>
-								<name>Sales User</name>
-							</role>
-						</roles>
-					</role>
-				</roles>
-			</role>
-		</roles>
-	</role>
-	<baseRole>
-		<name>Guest</name>
-	</baseRole>
-</roles>
+		</baseRoles>
+	</roles>
+</rolesList>
