@@ -74,7 +74,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 	
 	/**
-	 * Initialisation of the ACL singleton class with injected  dependencies.
+	 * Initialisation of the ACL singleton class with injected dependencies.
 	 * 
 	 * @return void
 	 */
@@ -88,6 +88,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 								Default_Model_Acl::ROLES_CONFIG_CHILDROLES_IDENTIFIER))
 			->setResources(new Zend_Config_Xml($resourceConfigPath, 
 								Default_Model_Acl::RESOURCES_CONFIG_CHILDRESOURCES_IDENTIFIER));
+								
+//		$this->registerPluginResource(new Default_Model_Acl_Plugin());
 	}
 }
 ?>

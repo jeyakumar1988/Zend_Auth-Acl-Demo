@@ -63,6 +63,41 @@ class Default_Model_Acl extends Zend_Acl
 	 */
 	const RESOURCES_CONFIG_CHILDRESOURCES_IDENTIFIER = 'resources';
 	
+	/**
+	 * Resources-Config: Identifier for permissions node.
+	 */
+	const RESOURCES_CONFIG_PERMISSIONS_IDENTIFIER = 'permissions';
+	
+	/**
+	 * Permissions-Config: Identifier for permission setter type allowAll node.
+	 */
+	const PERMISSIONS_CONFIG_TYPE_ALLOWALL = 'allowAll';
+	
+	/**
+	 * Permissions-Config: Identifier for perrmission setter type denyAll node.
+	 */
+	const PERMISSIONS_CONFIG_TYPE_DENYALL = 'denyAll';
+	
+	/**
+	 * Permissions-Config: Identifier for permission setter type allow node.
+	 */
+	const PERMISSIONS_CONFIG_TYPE_ALLOW = 'allow';
+	
+	/**
+	 * Permissions-Config: Identifier for permission setter type deny node.
+	 */
+	const PERMISSIONS_CONFIG_TYPE_DENY = 'deny';
+	
+	/**
+	 * Permissions-Config: Identifier for permission setter type disableAll node.
+	 */
+	const PERMISSIONS_CONFIG_TYPE_DISABLEALL = 'disableAll';
+	
+	/**
+	 * Permissions-Config: Identifier for permission setter type enableAll node.
+	 */
+	const PERMISSIONS_CONFIG_TYPE_ENABLEALL = 'enableAll';
+	
 	protected function __construct() {}
 	protected function __clone() {}
 	
@@ -239,6 +274,11 @@ class Default_Model_Acl extends Zend_Acl
 			} else 
 				throw new Zend_Acl_Exception("An unknown resource-type was specified.");
 				
+			if (key_exists(self::RESOURCES_CONFIG_PERMISSIONS_IDENTIFIER, $resource)) {
+				$this->setResourcePermissions($parentResource, 
+							$resource[self::RESOURCES_CONFIG_PERMISSIONS_IDENTIFIER]);
+			}
+				
 			if (key_exists(self::RESOURCES_CONFIG_CHILDRESOURCES_IDENTIFIER, 
 							$resource))
 				$this->processResourcesArray($resource[self::RESOURCES_CONFIG_CHILDRESOURCES_IDENTIFIER],
@@ -336,5 +376,82 @@ class Default_Model_Acl extends Zend_Acl
 			return $resource[self::RESOURCES_CONFIG_RESOURCE_ACTION_IDENTIFIER];
 		}
 		return null;
+	}
+	
+	/**
+	 * Function sets permissions for a given resource.
+	 * 
+	 * @param Zend_Acl_Resource_Interface|array|string $resource
+	 * @param array $permissionsList
+	 * @return Default_Model_Acl
+	 * @throws Zend_Acl_Exception
+	 */
+	public function setResourcePermissions($resource, array $permissionsList)
+	{
+		foreach ($permissionsList as $permissionType => $permissions)
+		{
+			if (Default_Model_Array_Utils::isAssoc($permissions))
+				$permissions = array($permissions);
+				
+			foreach ($permissions as $permission)
+			{
+				$role = null;
+				if (key_exists(self::ROLES_CONFIG_ROLE_IDENTIFIER, $permission))
+				{
+					$role = $permission[self::ROLES_CONFIG_ROLE_IDENTIFIER];
+					unset($permission[self::ROLES_CONFIG_ROLE_IDENTIFIER]);
+				}
+				
+				switch ($permissionType)
+				{
+					case self::PERMISSIONS_CONFIG_TYPE_ALLOWALL:
+						$this->allow(null, $resource, array_keys($permission));
+						break;
+						
+					case self::PERMISSIONS_CONFIG_TYPE_DENYALL:
+						$this->deny(null, $resource, array_keys($permission));
+						break;
+						
+					case self::PERMISSIONS_CONFIG_TYPE_ALLOW:
+						if (empty($role))
+							throw new Zend_Acl_Exception("No role was specified for an \"allow\" rule node.");
+							
+						if (empty($permission))
+							throw new Zend_Acl_Exception("No permissions were specified for an \"allow\" rule node.");
+							
+						$this->allow($role, $resource, array_keys($permission));
+						break;
+						
+					case self::PERMISSIONS_CONFIG_TYPE_DENY:
+						if (empty($role))
+							throw new Zend_Acl_Exception("No role was specified for a \"deny\" rule node.");
+							
+						if (empty($permission))
+							throw new Zend_Acl_Exception("No permissions were specified for a \"deny\" rule node.");
+						
+						$this->deny($role, $resource, array_keys($permission));
+						break;
+						
+					case self::PERMISSIONS_CONFIG_TYPE_DISABLEALL:
+						if (empty($role))
+							throw new Zend_Acl_Exception("No role was specified for a \"block\" rule node.");
+							
+						$this->deny($role, $resource);
+						break;
+					
+					case self::PERMISSIONS_CONFIG_TYPE_ENABLEALL:
+						if (empty($role))
+							throw new Zend_Acl_Exception("No role was specified for an \"unblock\" rule node.");
+							
+						$this->allow($role, $resource);
+						break;
+						
+					default:
+						throw new Zend_Acl_Exception("An unknown permission setter was discovered.");
+				} 
+			}
+		}
+		
+		return $this;
 	}
 }

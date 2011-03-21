@@ -3,6 +3,14 @@
 	<resources>
 		<resource>
 			<module>default</module>
+			<permissions>
+				<allowAll>
+					<view />
+					<enquire />
+				</allowAll>
+				<disableAll role="Guest" />
+				<enableAll role="Guest" />
+			</permissions>
 			<resources>
 				<resource>
 					<controller>product</controller>
@@ -11,7 +19,9 @@
 						<allow role="User">
 							<comment />
 						</allow>
-						<deny role="Guest"></deny>
+						<deny role="Guest">
+							<enquire />
+						</deny>
 					</permissions>
 				</resource>
 			</resources>

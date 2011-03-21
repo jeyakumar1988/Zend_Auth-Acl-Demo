@@ -7,5 +7,5 @@
  */
 class Default_Model_Acl_Plugin extends Zend_Controller_Plugin_Abstract
 {
-	
+	//TODO: Implement ACL assertion.
 }
